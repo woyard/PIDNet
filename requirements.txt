@@ -1,0 +1,11 @@
+# Core PyTorch requirements with specific versions
+torch==2.5.1
+# For CUDA 11.8 support, you may need to install PyTorch with the appropriate CUDA version
+# You can install via pip with: pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu118
+
+# Project dependencies
+numpy>=1.20.0
+tensorboardX>=2.5.0
+Pillow>=9.0.0
+opencv-python>=4.5.0
+tqdm>=4.60.0
