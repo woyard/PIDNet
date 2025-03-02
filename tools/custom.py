@@ -49,7 +49,10 @@ def parse_args():
 
     return args
 
+
 def input_transform(image):
+    image = image[:min(1024, image.shape[0]), :min(2048, image.shape[1])]
+
     image = image.astype(np.float32)[:, :, ::-1]
     image = image / 255.0
     image -= mean
@@ -82,10 +85,9 @@ if __name__ == '__main__':
     with torch.no_grad():
         for img_path in images_list:
             img_name = img_path.split("\\")[-1]
-            img = cv2.imread(os.path.join(args.r, img_name),
-                               cv2.IMREAD_COLOR)
-            sv_img = np.zeros_like(img).astype(np.uint8)
+            img = cv2.imread(os.path.join(args.r, img_name), cv2.IMREAD_COLOR)
             img = input_transform(img)
+            sv_img = np.zeros_like(img).astype(np.uint8)
             img = img.transpose((2, 0, 1)).copy()
             img = torch.from_numpy(img).unsqueeze(0).cuda()
             pred = model(img)
@@ -101,8 +103,3 @@ if __name__ == '__main__':
             if not os.path.exists(sv_path):
                 os.mkdir(sv_path)
             sv_img.save(sv_path+img_name)
-            
-            
-            
-        
-        
