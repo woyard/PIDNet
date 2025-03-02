@@ -26,7 +26,7 @@ from utils.utils import create_logger
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train segmentation network')
-    
+
     parser.add_argument('--cfg',
                         help='experiment configure file name',
                         default="experiments/cityscapes/pidnet_small_cityscapes.yaml",
@@ -56,15 +56,15 @@ def main():
     cudnn.enabled = config.CUDNN.ENABLED
 
     # build model
-    model = model = models.pidnet.get_seg_model(config, imgnet_pretrained=True)
+    model = model = models.pidnet.get_seg_model(config, imgnet_pretrained=False)
 
     if config.TEST.MODEL_FILE:
         model_state_file = config.TEST.MODEL_FILE
     else:
-        model_state_file = os.path.join(final_output_dir, 'best.pt')      
-   
+        model_state_file = os.path.join(final_output_dir, 'best.pt')
+
     logger.info('=> loading model from {}'.format(model_state_file))
-        
+
     pretrained_dict = torch.load(model_state_file)
     if 'state_dict' in pretrained_dict:
         pretrained_dict = pretrained_dict['state_dict']
@@ -97,32 +97,32 @@ def main():
         shuffle=False,
         num_workers=0,
         pin_memory=True)
-    
+
     start = timeit.default_timer()
-    
-    
+
+
     if ('test' in config.DATASET.TEST_SET) and ('city' in config.DATASET.DATASET):
-        test(config, 
-             test_dataset, 
-             testloader, 
+        test(config,
+             test_dataset,
+             testloader,
              model,
              sv_dir=final_output_dir)
-        
+
     else:
-        mean_IoU, IoU_array, pixel_acc, mean_acc = testval(config, 
-                                                           test_dataset, 
-                                                           testloader, 
+        mean_IoU, IoU_array, pixel_acc, mean_acc = testval(config,
+                                                           test_dataset,
+                                                           testloader,
                                                            model)
-    
+
         msg = 'MeanIU: {: 4.4f}, Pixel_Acc: {: 4.4f}, \
-            Mean_Acc: {: 4.4f}, Class IoU: '.format(mean_IoU, 
+            Mean_Acc: {: 4.4f}, Class IoU: '.format(mean_IoU,
             pixel_acc, mean_acc)
         logging.info(msg)
         logging.info(IoU_array)
 
 
     end = timeit.default_timer()
-    logger.info('Mins: %d' % np.int((end-start)/60))
+    logger.info('Mins: %d' % np.int32((end-start)/60))
     logger.info('Done')
 
 
